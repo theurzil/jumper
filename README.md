@@ -20,7 +20,7 @@ cd jumper
 make install
 ```
 
-This builds the binary to `/usr/local/bin/jumper`, copies `jumper.sh` to `~/.local/share/jumper/jumper.sh`, and adds a `source` line to `~/.bashrc`. Zsh users, add the same line to `~/.zshrc` manually:
+This builds the binary to `/usr/local/bin/jumper`, copies `jumper.sh` to `~/.local/share/jumper/jumper.sh`, and adds a `source` line to `~/.bashrc`. If `/usr/local/bin` isn't writable, you'll be prompted for your `sudo` password. Zsh users, add the same line to `~/.zshrc` manually:
 
 ```bash
 source ~/.local/share/jumper/jumper.sh
@@ -56,7 +56,7 @@ older          -> frequency * 0.25
 ## Uninstall
 
 ```bash
-rm /usr/local/bin/jumper
+make uninstall   # or: sudo rm /usr/local/bin/jumper
 rm ~/.local/share/jumper/history.csv
 # and remove the `source jumper.sh` line from your shell rc file
 ```
