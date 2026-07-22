@@ -12,6 +12,20 @@ j() {
         return
     fi
 
+    case "$1" in
+        -h|--help)
+            echo "j - jump to a tracked directory by frecency"
+            echo ""
+            echo "Usage:"
+            echo "  j <term>   cd to the best-ranked directory matching <term>"
+            echo "  j          cd to \$HOME"
+            echo "  j --help   show this help"
+            echo ""
+            echo "History commands: jumper add|query|list|--help"
+            return 0
+            ;;
+    esac
+
     local target
     target="$(jumper query "$*")"
     if [ -n "$target" ] && [ -d "$target" ]; then

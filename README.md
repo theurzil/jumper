@@ -36,9 +36,11 @@ To uninstall: `make uninstall`
 |------------------|-------------------------------------------------|
 | `j <term>`       | cd to the best-ranked directory matching `term` |
 | `j`              | cd to `$HOME`                                   |
+| `j --help`       | show `j` help                                   |
 | `jumper add <path>` | manually record a visit to `path`            |
 | `jumper query <term>` | print the best-matching path (no cd)       |
 | `jumper list`    | print all tracked paths, ranked by frecency     |
+| `jumper --help`  | show `jumper` help                              |
 
 History is built automatically: every `cd` (via the shell hook) records the new directory.
 

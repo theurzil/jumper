@@ -35,13 +35,15 @@ func (e Entity) score() float64 {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("usage: jumper add <path> | jumper query <term> | jumper list")
-		return
+		printHelp()
+		os.Exit(1)
 	}
 
 	cmd := os.Args[1]
 
 	switch cmd {
+	case "-h", "--help", "help":
+		printHelp()
 	case "add":
 		if len(os.Args) < 3 {
 			fmt.Println("usage: jumper add <path>")
@@ -68,9 +70,22 @@ func main() {
 			os.Exit(1)
 		}
 	default:
-		fmt.Println("usage: jumper add <path> | jumper query <term> | jumper list")
+		printHelp()
 		os.Exit(1)
 	}
+}
+
+func printHelp() {
+	fmt.Println(`jumper - frecency-based directory history tracker
+
+Usage:
+  jumper add <path>     record a visit to <path>
+  jumper query <term>   print the best-matching path for <term>
+  jumper list           print all tracked paths, ranked by frecency
+  jumper --help         show this help
+
+Note: jumper only tracks and queries history, it does not change your
+shell's directory. Use the 'j' shell function (see jumper.sh) to cd.`)
 }
 
 // historyPath return the history file path
