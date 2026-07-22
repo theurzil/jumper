@@ -1,5 +1,7 @@
 # jumper
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Autojump-style directory jumper. Remembers directories you visit and lets you jump to them by typing a fragment of their name.
 
 ```
