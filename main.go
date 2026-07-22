@@ -20,6 +20,9 @@ type Entity struct {
 
 type Entities []Entity
 
+// version is set at build time via -ldflags "-X main.version=vX.Y.Z"
+var version = "dev"
+
 // score returns a frecency score combining frequency and recency.
 func (e Entity) score() float64 {
 	age := time.Now().Unix() - e.LastVisit
@@ -44,6 +47,8 @@ func main() {
 	switch cmd {
 	case "-h", "--help", "help":
 		printHelp()
+	case "-v", "--version", "version":
+		fmt.Println("jumper " + version)
 	case "add":
 		if len(os.Args) < 3 {
 			fmt.Println("usage: jumper add <path>")
