@@ -1,7 +1,5 @@
 # jumper
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
 Autojump-style directory jumper. Remembers directories you visit and lets you jump to them by typing a fragment of their name.
 
 ```
@@ -82,6 +80,6 @@ rm ~/.local/share/jumper/history.csv
 # and remove the `source jumper.sh` line from your shell rc file
 ```
 
-## Releases
+## License
 
-Versioning follows [Conventional Commits](https://www.conventionalcommits.org/) via [release-please](https://github.com/googleapis/release-please): `fix:` commits bump the patch version, `feat:` bumps minor, and a `!` or `BREAKING CHANGE:` footer bumps major. Every push to `master` that warrants a release opens a release PR; merging it tags the version, updates `VERSION`, and triggers a CI build that publishes binaries for Linux and macOS (amd64/arm64) to the GitHub release.
+This project is licensed under the MIT License.
