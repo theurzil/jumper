@@ -14,10 +14,27 @@ A `cd` builtin can only change the working directory of the shell that runs it, 
 
 ## Install
 
+### Download a prebuilt binary
+
+Grab the archive for your platform from the [latest release](https://github.com/theurzil/jumper/releases/latest), extract it, and put the binary on your `PATH`:
+
 ```bash
+tar -xzf jumper-linux-amd64.tar.gz
+sudo mv jumper-linux-amd64 /usr/local/bin/jumper
+```
+
+Then grab `jumper.sh` from the same repo (or the release source archive) and source it as described below.
+
+### Build from source
+
+Requires [mage](https://magefile.org/):
+
+```bash
+go install github.com/magefile/mage@latest
+
 git clone https://github.com/theurzil/jumper.git
 cd jumper
-make install
+mage install
 ```
 
 This builds the binary to `/usr/local/bin/jumper`, copies `jumper.sh` to `~/.local/share/jumper/jumper.sh`, and adds a `source` line to `~/.bashrc`. If `/usr/local/bin` isn't writable, you'll be prompted for your `sudo` password. Zsh users, add the same line to `~/.zshrc` manually:
@@ -28,7 +45,9 @@ source ~/.local/share/jumper/jumper.sh
 
 Restart your shell (or `source ~/.bashrc` / `source ~/.zshrc`).
 
-To uninstall: `make uninstall`
+To uninstall: `mage uninstall`
+
+Other targets: `mage build`, `mage test`, `mage clean`, `mage -l` to list all.
 
 ## Usage
 
@@ -56,7 +75,11 @@ older          -> frequency * 0.25
 ## Uninstall
 
 ```bash
-make uninstall   # or: sudo rm /usr/local/bin/jumper
+mage uninstall   # or: sudo rm /usr/local/bin/jumper
 rm ~/.local/share/jumper/history.csv
 # and remove the `source jumper.sh` line from your shell rc file
 ```
+
+## Releases
+
+Versioning follows [Conventional Commits](https://www.conventionalcommits.org/) via [release-please](https://github.com/googleapis/release-please): `fix:` commits bump the patch version, `feat:` bumps minor, and a `!` or `BREAKING CHANGE:` footer bumps major. Every push to `master` that warrants a release opens a release PR; merging it tags the version, updates `VERSION`, and triggers a CI build that publishes binaries for Linux and macOS (amd64/arm64) to the GitHub release.
