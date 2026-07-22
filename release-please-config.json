@@ -1,10 +1,11 @@
 {
+  "release-type": "simple",
   "packages": {
     ".": {
-      "release-type": "simple",
-      "extra-files": [
-        "VERSION"
-      ]
+      "version-file": "VERSION",
+      "package-name": "jumper",
+      "include-component-in-tag": false,
+      "tag-separator": ""
     }
   }
 }
