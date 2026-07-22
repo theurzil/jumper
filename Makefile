@@ -10,7 +10,12 @@ build:
 	go build -o $(BINARY) .
 
 install: build
-	install -Dm755 $(BINARY) $(PREFIX)/$(BINARY)
+	@if [ -w $(PREFIX) ] || [ -w $$(dirname $(PREFIX)) ]; then \
+		install -Dm755 $(BINARY) $(PREFIX)/$(BINARY); \
+	else \
+		echo "No write access to $(PREFIX), using sudo..."; \
+		sudo install -Dm755 $(BINARY) $(PREFIX)/$(BINARY); \
+	fi
 	install -Dm644 jumper.sh $(SCRIPT_DEST)
 	@if ! grep -qs "source $(SCRIPT_DEST)" $(SHELL_RC); then \
 		echo "source $(SCRIPT_DEST)" >> $(SHELL_RC); \
@@ -19,7 +24,11 @@ install: build
 	@echo "Installed. Run: source $(SHELL_RC)  (or restart your shell)"
 
 uninstall:
-	rm -f $(PREFIX)/$(BINARY)
+	@if [ -w $(PREFIX)/$(BINARY) ] || [ ! -e $(PREFIX)/$(BINARY) ]; then \
+		rm -f $(PREFIX)/$(BINARY); \
+	else \
+		sudo rm -f $(PREFIX)/$(BINARY); \
+	fi
 	rm -rf $(INSTALL_DIR)
 	@echo "Removed binary and $(INSTALL_DIR)."
 	@echo "Manually remove the 'source $(SCRIPT_DEST)' line from $(SHELL_RC)."
