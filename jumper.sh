@@ -40,5 +40,8 @@ if [ -n "$ZSH_VERSION" ]; then
     autoload -Uz add-zsh-hook
     add-zsh-hook chpwd _jumper_add
 elif [ -n "$BASH_VERSION" ]; then
-    PROMPT_COMMAND="_jumper_add;${PROMPT_COMMAND}"
+    case ";$PROMPT_COMMAND;" in
+        *";_jumper_add;"*) ;;
+        *) PROMPT_COMMAND="_jumper_add;${PROMPT_COMMAND}" ;;
+    esac
 fi
