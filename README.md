@@ -63,6 +63,22 @@ Other targets: `mage build`, `mage test`, `mage clean`, `mage -l` to list all.
 
 History is built automatically: every `cd` (via the shell hook) records the new directory.
 
+## Troubleshooting
+
+**New directories aren't showing up in `j` / `jumper list`.** In bash, `jumper.sh` hooks into `cd` by prepending to `PROMPT_COMMAND`. If some other rc snippet sourced *after* `jumper.sh` does a flat reassignment like:
+
+```bash
+PROMPT_COMMAND='some-other-command'
+```
+
+it silently wipes out jumper's hook. Fix it by appending instead of overwriting:
+
+```bash
+PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND;}some-other-command"
+```
+
+Check for other `PROMPT_COMMAND=` assignments in your rc files with `grep -n 'PROMPT_COMMAND=' ~/.bashrc`.
+
 ## Frecency scoring
 
 ```
