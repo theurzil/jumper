@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/theurzil/jumper/compare/v0.2.0...v0.2.1) (2026-07-25)
+
+
+### Bug Fixes
+
+* prevent PROMPT_COMMAND hook from being dropped ([ff4b15f](https://github.com/theurzil/jumper/commit/ff4b15f2e912b26284ce42d2a3485fdf404bdfff))
+* prevent PROMPT_COMMAND hook from being dropped ([db1156a](https://github.com/theurzil/jumper/commit/db1156a7246150f8b2d0c59d3b40e9f3a2920040))
+
 ## [0.2.0](https://github.com/theurzil/jumper/compare/v0.1.0...v0.2.0) (2026-07-22)
 
 
