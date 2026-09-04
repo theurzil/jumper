@@ -219,7 +219,27 @@ func add(path string) error {
 	return saveEntities(entities)
 }
 
-// query returns the best matching stored path for term, ranked by frecency.
+// matchTier ranks how well term matches path's basename, lower is better.
+// Exact basename matches beat basename prefixes, which beat any other
+// substring match anywhere in the path, so a query like "icc" prefers an
+// "icc" directory over a merely-containing "icc-back" one, and prefers a
+// tracked "github" dir over a "github/some-project" subdirectory.
+func matchTier(path, term string) int {
+	base := strings.ToLower(filepath.Base(path))
+	switch {
+	case base == term:
+		return 0
+	case strings.HasPrefix(base, term):
+		return 1
+	case strings.Contains(base, term):
+		return 2
+	default:
+		return 3 // matched elsewhere in the path, not the basename
+	}
+}
+
+// query returns the best matching stored path for term, ranked first by how
+// well term matches the path's basename, then by frecency within that tier.
 func query(term string) (string, error) {
 	entities, err := loadEntities()
 	if err != nil {
@@ -239,6 +259,10 @@ func query(term string) (string, error) {
 	}
 
 	sort.Slice(matches, func(i, j int) bool {
+		ti, tj := matchTier(matches[i].Path, term), matchTier(matches[j].Path, term)
+		if ti != tj {
+			return ti < tj
+		}
 		return matches[i].score() > matches[j].score()
 	})
 
