@@ -26,3 +26,45 @@ func TestScoreHigherFrequencyWins(t *testing.T) {
 		t.Errorf("expected higher frequency to score higher: frequent=%v rare=%v", frequent.score(), rare.score())
 	}
 }
+
+func TestQueryPrefersExactBasenameOverFrequentSubstring(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+
+	now := time.Now().Unix()
+	entities := Entities{
+		{Path: "/home/u/dev/icc", Frequency: 1, LastVisit: now},
+		{Path: "/home/u/dev/icc-back", Frequency: 50, LastVisit: now},
+	}
+	if err := saveEntities(entities); err != nil {
+		t.Fatalf("saveEntities: %v", err)
+	}
+
+	got, err := query("icc")
+	if err != nil {
+		t.Fatalf("query: %v", err)
+	}
+	if got != "/home/u/dev/icc" {
+		t.Errorf("expected exact basename match /home/u/dev/icc, got %s", got)
+	}
+}
+
+func TestQueryPrefersBaseDirOverVisitedSubdir(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+
+	now := time.Now().Unix()
+	entities := Entities{
+		{Path: "/home/u/github", Frequency: 1, LastVisit: now - 1000},
+		{Path: "/home/u/github/some-project", Frequency: 5, LastVisit: now},
+	}
+	if err := saveEntities(entities); err != nil {
+		t.Fatalf("saveEntities: %v", err)
+	}
+
+	got, err := query("github")
+	if err != nil {
+		t.Fatalf("query: %v", err)
+	}
+	if got != "/home/u/github" {
+		t.Errorf("expected base dir /home/u/github, got %s", got)
+	}
+}
