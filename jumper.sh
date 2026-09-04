@@ -39,9 +39,24 @@ j() {
 if [ -n "$ZSH_VERSION" ]; then
     autoload -Uz add-zsh-hook
     add-zsh-hook chpwd _jumper_add
+
+    _jumper_complete() {
+        local term="${words[2]}"
+        local -a matches
+        matches=("${(@f)$(jumper complete "$term" 2>/dev/null)}")
+        compadd -a matches
+    }
+    compdef _jumper_complete j
 elif [ -n "$BASH_VERSION" ]; then
     case ";$PROMPT_COMMAND;" in
         *";_jumper_add;"*) ;;
         *) PROMPT_COMMAND="_jumper_add;${PROMPT_COMMAND}" ;;
     esac
+
+    _jumper_complete() {
+        local term="${COMP_WORDS[1]}"
+        local IFS=$'\n'
+        COMPREPLY=($(jumper complete "$term" 2>/dev/null))
+    }
+    complete -F _jumper_complete j
 fi

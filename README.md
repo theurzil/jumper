@@ -59,9 +59,12 @@ Other targets: `mage build`, `mage test`, `mage clean`, `mage -l` to list all.
 | `jumper add <path>` | manually record a visit to `path`            |
 | `jumper query <term>` | print the best-matching path (no cd)       |
 | `jumper list`    | print all tracked paths, ranked by frecency     |
+| `jumper complete <term>` | print all paths matching `term`, ranked, one per line |
 | `jumper --help`  | show `jumper` help                              |
 
 History is built automatically: every `cd` (via the shell hook) records the new directory.
+
+`jumper.sh` also registers tab completion for `j` in bash and zsh, backed by `jumper complete`, so pressing TAB after `j <partial>` suggests ranked matches.
 
 ## Troubleshooting
 
