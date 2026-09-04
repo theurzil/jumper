@@ -74,6 +74,15 @@ func main() {
 			fmt.Println("Error listing history: ", err)
 			os.Exit(1)
 		}
+	case "complete":
+		term := ""
+		if len(os.Args) >= 3 {
+			term = os.Args[2]
+		}
+		if err := complete(term); err != nil {
+			fmt.Println("Error completing: ", err)
+			os.Exit(1)
+		}
 	default:
 		printHelp()
 		os.Exit(1)
@@ -87,6 +96,7 @@ Usage:
   jumper add <path>     record a visit to <path>
   jumper query <term>   print the best-matching path for <term>
   jumper list           print all tracked paths, ranked by frecency
+  jumper complete <term> print all paths matching <term>, ranked, one per line
   jumper --help         show this help
 
 Note: jumper only tracks and queries history, it does not change your
@@ -238,24 +248,16 @@ func matchTier(path, term string) int {
 	}
 }
 
-// query returns the best matching stored path for term, ranked first by how
-// well term matches the path's basename, then by frecency within that tier.
-func query(term string) (string, error) {
-	entities, err := loadEntities()
-	if err != nil {
-		return "", err
-	}
-
+// rankedMatches returns all stored entities matching term, ranked first by
+// how well term matches the path's basename, then by frecency within that
+// tier (best match first).
+func rankedMatches(entities Entities, term string) Entities {
 	term = strings.ToLower(term)
 	matches := make(Entities, 0)
 	for _, e := range entities {
 		if strings.Contains(strings.ToLower(e.Path), term) {
 			matches = append(matches, e)
 		}
-	}
-
-	if len(matches) == 0 {
-		return "", fmt.Errorf("no match found for %q", term)
 	}
 
 	sort.Slice(matches, func(i, j int) bool {
@@ -266,7 +268,38 @@ func query(term string) (string, error) {
 		return matches[i].score() > matches[j].score()
 	})
 
+	return matches
+}
+
+// query returns the best matching stored path for term.
+func query(term string) (string, error) {
+	entities, err := loadEntities()
+	if err != nil {
+		return "", err
+	}
+
+	matches := rankedMatches(entities, term)
+	if len(matches) == 0 {
+		return "", fmt.Errorf("no match found for %q", term)
+	}
+
 	return matches[0].Path, nil
+}
+
+// complete prints every stored path matching term, best match first, one
+// per line. Used for shell completion. No matches is not an error, it just
+// prints nothing.
+func complete(term string) error {
+	entities, err := loadEntities()
+	if err != nil {
+		return err
+	}
+
+	for _, e := range rankedMatches(entities, term) {
+		fmt.Println(e.Path)
+	}
+
+	return nil
 }
 
 // list prints all stored entities ranked by frecency.

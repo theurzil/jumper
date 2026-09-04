@@ -48,6 +48,26 @@ func TestQueryPrefersExactBasenameOverFrequentSubstring(t *testing.T) {
 	}
 }
 
+func TestRankedMatchesOrdersBestFirst(t *testing.T) {
+	now := time.Now().Unix()
+	entities := Entities{
+		{Path: "/home/u/dev/foo-bar", Frequency: 50, LastVisit: now},
+		{Path: "/home/u/dev/foo", Frequency: 1, LastVisit: now},
+		{Path: "/home/u/other", Frequency: 1, LastVisit: now},
+	}
+
+	matches := rankedMatches(entities, "foo")
+	if len(matches) != 2 {
+		t.Fatalf("expected 2 matches, got %d: %v", len(matches), matches)
+	}
+	if matches[0].Path != "/home/u/dev/foo" {
+		t.Errorf("expected /home/u/dev/foo first, got %s", matches[0].Path)
+	}
+	if matches[1].Path != "/home/u/dev/foo-bar" {
+		t.Errorf("expected /home/u/dev/foo-bar second, got %s", matches[1].Path)
+	}
+}
+
 func TestQueryPrefersBaseDirOverVisitedSubdir(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
 
