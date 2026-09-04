@@ -142,27 +142,48 @@ func loadEntities() (Entities, error) {
 }
 
 // saveEntities writes entities back to the history file, creating dirs as needed.
+// It writes to a temp file in the same directory, fsyncs it, then renames it
+// over the real file so a crash or power loss mid-write can't corrupt or
+// truncate the existing history.
 func saveEntities(entities Entities) error {
 	path := historyPath()
+	dir := filepath.Dir(path)
 
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return fmt.Errorf("creating history dir: %w", err)
 	}
 
-	file, err := os.Create(path)
+	tmp, err := os.CreateTemp(dir, ".history-*.csv.tmp")
 	if err != nil {
-		return fmt.Errorf("creating history file: %w", err)
+		return fmt.Errorf("creating temp history file: %w", err)
 	}
-	defer file.Close()
+	tmpPath := tmp.Name()
+	defer os.Remove(tmpPath) // no-op once the rename below succeeds
 
-	writer := csv.NewWriter(file)
-	defer writer.Flush()
-
+	writer := csv.NewWriter(tmp)
 	for _, e := range entities {
 		row := []string{e.Path, strconv.Itoa(e.Frequency), strconv.FormatInt(e.LastVisit, 10)}
 		if err := writer.Write(row); err != nil {
+			tmp.Close()
 			return fmt.Errorf("writing history row: %w", err)
 		}
+	}
+	writer.Flush()
+	if err := writer.Error(); err != nil {
+		tmp.Close()
+		return fmt.Errorf("flushing history rows: %w", err)
+	}
+
+	if err := tmp.Sync(); err != nil {
+		tmp.Close()
+		return fmt.Errorf("syncing temp history file: %w", err)
+	}
+	if err := tmp.Close(); err != nil {
+		return fmt.Errorf("closing temp history file: %w", err)
+	}
+
+	if err := os.Rename(tmpPath, path); err != nil {
+		return fmt.Errorf("replacing history file: %w", err)
 	}
 
 	return nil
