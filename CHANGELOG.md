@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.0](https://github.com/theurzil/jumper/compare/v0.2.1...v0.3.0) (2026-09-04)
+
+
+### Features
+
+* add jumper complete and shell tab completion for j ([#7](https://github.com/theurzil/jumper/issues/7)) ([6d7093f](https://github.com/theurzil/jumper/commit/6d7093f736e5616f09b25384188ed1b21e9174bf))
+
+
+### Bug Fixes
+
+* rank basename matches above generic substring matches in query ([#6](https://github.com/theurzil/jumper/issues/6)) ([da7f1e1](https://github.com/theurzil/jumper/commit/da7f1e198e116697eb3ea1bc37bfb6268e24049d))
+* write history file atomically to prevent loss on crash ([#4](https://github.com/theurzil/jumper/issues/4)) ([86a26ab](https://github.com/theurzil/jumper/commit/86a26ab1cfd7a7cb3700eb6459cf90dc8cd1c26f))
+
 ## [0.2.1](https://github.com/theurzil/jumper/compare/v0.2.0...v0.2.1) (2026-07-25)
 
 
