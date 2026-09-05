@@ -42,6 +42,39 @@ func Test() error {
 	return sh.RunV("go", "test", "-race", "-v", "./...")
 }
 
+// Vet runs go vet on the codebase.
+func Vet() error {
+	return sh.RunV("go", "vet", "./...")
+}
+
+// Fmt formats the codebase with gofmt.
+func Fmt() error {
+	return sh.RunV("gofmt", "-l", "-w", ".")
+}
+
+// FmtCheck fails if any file is not gofmt-formatted.
+func FmtCheck() error {
+	out, err := sh.Output("gofmt", "-l", ".")
+	if err != nil {
+		return err
+	}
+	if out != "" {
+		return fmt.Errorf("files not gofmt-formatted:\n%s", out)
+	}
+	return nil
+}
+
+// Lint runs golangci-lint on the codebase.
+func Lint() error {
+	return sh.RunV("golangci-lint", "run", "./...")
+}
+
+// CI runs build, vet, fmt check, lint, and tests, as run in continuous integration.
+func CI() error {
+	mg.Deps(Build, Vet, FmtCheck, Lint, Test)
+	return nil
+}
+
 // Install builds and installs the binary, shell script, and rc hook.
 func Install() error {
 	mg.Deps(Build)

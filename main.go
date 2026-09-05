@@ -124,7 +124,7 @@ func loadEntities() (Entities, error) {
 		}
 		return nil, err
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	reader := csv.NewReader(file)
 	records, err := reader.ReadAll()
@@ -168,24 +168,24 @@ func saveEntities(entities Entities) error {
 		return fmt.Errorf("creating temp history file: %w", err)
 	}
 	tmpPath := tmp.Name()
-	defer os.Remove(tmpPath) // no-op once the rename below succeeds
+	defer func() { _ = os.Remove(tmpPath) }() // no-op once the rename below succeeds
 
 	writer := csv.NewWriter(tmp)
 	for _, e := range entities {
 		row := []string{e.Path, strconv.Itoa(e.Frequency), strconv.FormatInt(e.LastVisit, 10)}
 		if err := writer.Write(row); err != nil {
-			tmp.Close()
+			_ = tmp.Close()
 			return fmt.Errorf("writing history row: %w", err)
 		}
 	}
 	writer.Flush()
 	if err := writer.Error(); err != nil {
-		tmp.Close()
+		_ = tmp.Close()
 		return fmt.Errorf("flushing history rows: %w", err)
 	}
 
 	if err := tmp.Sync(); err != nil {
-		tmp.Close()
+		_ = tmp.Close()
 		return fmt.Errorf("syncing temp history file: %w", err)
 	}
 	if err := tmp.Close(); err != nil {
